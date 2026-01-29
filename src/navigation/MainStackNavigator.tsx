@@ -29,8 +29,8 @@ export default function MainStackNavigator() {
       <Stack.Screen
         name="CustomerForm"
         component={CustomerForm}
-        options={{ title: 'Create Customer' }}
-        
+        // options={{ title: 'Create Customer' }}
+         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="CustomerEdit"

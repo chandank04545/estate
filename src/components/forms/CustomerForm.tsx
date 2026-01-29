@@ -153,8 +153,9 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import api from "../../api/api";
-import { User, Phone, Home, MapPin, DollarSign, MessageSquare } from "lucide-react-native";
+import { Users, User, Phone, Home, MapPin, DollarSign, MessageSquare, ArrowLeft } from "lucide-react-native";
 
 interface Customer {
   name: string;
@@ -175,6 +176,7 @@ const FIELD_CONFIG: Record<keyof Customer, any> = {
 };
 
 const CustomerForm: React.FC = () => {
+  const navigation = useNavigation<any>();
   const [form, setForm] = useState<Customer>({
     name: "",
     phone: "",
@@ -240,7 +242,7 @@ const CustomerForm: React.FC = () => {
 
   const getIcon = (fieldKey: keyof Customer) => {
     const iconProps = { size: 20, color: FIELD_CONFIG[fieldKey].color, strokeWidth: 2 };
-    
+
     switch (fieldKey) {
       case "name":
         return <User {...iconProps} />;
@@ -260,80 +262,87 @@ const CustomerForm: React.FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header Banner */}
+    <View style={styles.container}>
+      {/* Header Banner - Sticky */}
       <View style={styles.headerBanner}>
-        <Text style={styles.headerTitle}>Create New Customer</Text>
-        <Text style={styles.headerSubtitle}>Fill in the details below</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <ArrowLeft size={24} color="#fff" strokeWidth={2.5} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Create New Customer</Text>
+        </View>
+
       </View>
 
-      {/* Form Fields */}
-      <View style={styles.formCard}>
-        {Object.keys(form).map((key) => {
-          const fieldKey = key as keyof Customer;
-          const config = FIELD_CONFIG[fieldKey];
-          const bgColor = config.color + "15";
-          const borderColor = config.color;
+      {/* Scrollable Form */}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Form Fields */}
+        <View style={styles.formCard}>
+          {Object.keys(form).map((key) => {
+            const fieldKey = key as keyof Customer;
+            const config = FIELD_CONFIG[fieldKey];
+            const bgColor = config.color + "15";
 
-          return (
-            <View key={key} style={styles.fieldContainer}>
-              <View style={styles.labelRow}>
-                <View style={[styles.colorDot, { backgroundColor: config.color }]} />
-                <Text style={styles.label}>{config.label}</Text>
-              </View>
-
-              <View style={[styles.inputWrapper, { backgroundColor: bgColor }]}>
-                <View style={[styles.iconContainer, { backgroundColor: config.color + "25" }]}>
-                  {getIcon(fieldKey)}
+            return (
+              <View key={key} style={styles.fieldContainer}>
+                <View style={styles.labelRow}>
+                  <View style={[styles.colorDot, { backgroundColor: config.color }]} />
+                  <Text style={styles.label}>{config.label}</Text>
                 </View>
 
-                <TextInput
-                  style={[
-                    styles.input,
-                    config.multiline && styles.textArea,
-                    fieldKey === "phone" &&
+                <View style={[styles.inputWrapper, { backgroundColor: bgColor }]}>
+                  <View style={[styles.iconContainer, { backgroundColor: config.color + "25" }]}>
+                    {getIcon(fieldKey)}
+                  </View>
+
+                  <TextInput
+                    style={[
+                      styles.input,
+                      config.multiline && styles.textArea,
+                      fieldKey === "phone" &&
                       form.phone.length > 0 &&
                       form.phone.length < 10 && {
                         borderColor: "#EF4444",
                       },
-                  ]}
-                  placeholder={`Enter ${config.label.toLowerCase()}`}
-                  placeholderTextColor="#999"
-                  keyboardType={config.keyboardType || "default"}
-                  multiline={config.multiline}
-                  value={form[fieldKey]}
-                  onChangeText={(text) => handleChange(fieldKey, text)}
-                  maxLength={fieldKey === "phone" ? 10 : undefined}
-                />
+                    ]}
+                    placeholder={`Enter ${config.label.toLowerCase()}`}
+                    placeholderTextColor="#999"
+                    keyboardType={config.keyboardType || "default"}
+                    multiline={config.multiline}
+                    value={form[fieldKey]}
+                    onChangeText={(text) => handleChange(fieldKey, text)}
+                    maxLength={fieldKey === "phone" ? 10 : undefined}
+                  />
+                </View>
+
+                {fieldKey === "phone" &&
+                  form.phone.length > 0 &&
+                  form.phone.length < 10 && (
+                    <Text style={styles.errorText}>
+                      ⚠️ Phone number must be 10 digits
+                    </Text>
+                  )}
               </View>
+            );
+          })}
+        </View>
+      </ScrollView>
 
-              {fieldKey === "phone" &&
-                form.phone.length > 0 &&
-                form.phone.length < 10 && (
-                  <Text style={styles.errorText}>
-                    ⚠️ Phone number must be 10 digits
-                  </Text>
-                )}
-            </View>
-          );
-        })}
+      {/* Submit Button - Sticky */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            !isFormValid && styles.buttonDisabled,
+          ]}
+          onPress={submitCustomer}
+          disabled={!isFormValid}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonText}>✓ Submit Customer</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Submit Button */}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          !isFormValid && styles.buttonDisabled,
-        ]}
-        onPress={submitCustomer}
-        disabled={!isFormValid}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.buttonText}>✓ Submit Customer</Text>
-      </TouchableOpacity>
-
-      <View style={{ height: 20 }} />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -343,23 +352,36 @@ export default CustomerForm;
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 30,
+    flex: 1,
     backgroundColor: "#f0f9ff",
+  },
+  scrollContent: {
+    // paddingHorizontal: 16,
+    paddingVertical: 20,
+    paddingBottom: 100,
   },
   headerBanner: {
     // backgroundColor: "linear-gradient(135deg, #ec4899 0%, #f59e0b 100%)",
     backgroundColor: '#ec4899',
-    paddingVertical: 30,
+    paddingTop: 10,
     paddingHorizontal: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    marginBottom: 24,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
     marginBottom: 8,
+    textAlign: "center",
+    width: '80%'
   },
   headerSubtitle: {
     fontSize: 14,
@@ -433,9 +455,19 @@ const styles = StyleSheet.create({
     color: "#EF4444",
     fontWeight: "500",
   },
+  buttonContainer: {
+    backgroundColor: "#f0f9ff",
+    borderTopWidth: 1,
+    borderTopColor: "#bfdbfe",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   button: {
     backgroundColor: "#ec4899",
-    marginHorizontal: 16,
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
