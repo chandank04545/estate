@@ -330,6 +330,7 @@ import {
   RefreshControl,
 } from "react-native";
 import api from "../api/api";
+import { useNavigation } from "@react-navigation/native";
 
 interface Customer {
   _id: string;
@@ -343,6 +344,8 @@ interface Customer {
 const Customer: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation()
 
   useEffect(() => {
     fetchCustomers();
@@ -363,9 +366,9 @@ const Customer: React.FC = () => {
 
   // 🗑️ CONFIRM DELETE
   const confirmDelete = (id: string) => {
-     console.log('deleteCustomer called with id:', id);
+    console.log('deleteCustomer called with id:', id);
 
-      deleteCustomer(id)
+    deleteCustomer(id)
 
     // Alert.alert(
     //   "Delete Customer",
@@ -428,6 +431,23 @@ const Customer: React.FC = () => {
               style={styles.deleteBtn}
             >
               <Text style={styles.deleteIcon}>🗑️</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("CustomerEdit", {
+                  customer: item,
+                  onUpdate: (updatedCustomer) => {
+                    setCustomers(prev =>
+                      prev.map(c =>
+                        c._id === updatedCustomer._id ? updatedCustomer : c
+                      )
+                    );
+                  },
+                })
+              }
+            >
+              <Text style={{ fontSize: 20 }}>✏️</Text>
             </TouchableOpacity>
           </View>
 
