@@ -329,6 +329,7 @@ import {
   Alert,
   RefreshControl,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { Users } from "lucide-react-native";
 import api from "../api/api";
@@ -404,6 +405,11 @@ const Customer: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
+      <StatusBar
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
       {/* Header Banner */}
       <View style={styles.headerBanner}>
         <View style={styles.headerContent}>
@@ -522,6 +528,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ec4899",
     paddingVertical: 24,
     paddingHorizontal: 16,
+     paddingTop: 60,
   },
   headerContent: {
     flexDirection: "row",

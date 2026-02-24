@@ -1,46 +1,8 @@
-// import React, { useState } from 'react';
-// import { View, Button, ScrollView } from 'react-native';
-// import OwnerForm from '../components/forms/OwnerForm';
-// import CustomerForm from '../components/forms/CustomerForm';
-
-
-// const HomeScreen: React.FC = () => {
-//   const [showOwner, setShowOwner] = useState(false);
-//   const [showCustomer, setShowCustomer] = useState(false);
-
-//   return (
-//     <ScrollView contentContainerStyle={{ padding: 16 }}>
-//       <Button
-//         title="Create Owner"
-//         onPress={() => {
-//           setShowOwner(true);
-//           setShowCustomer(false);
-//         }}
-//       />
-
-//       <View style={{ marginVertical: 10 }} />
-
-//       <Button
-//         title="Create Customer"
-//         onPress={() => {
-//           setShowCustomer(true);
-//           setShowOwner(false);
-//         }}
-//       />
-
-//       {showOwner && <OwnerForm />}
-//       {showCustomer && <CustomerForm />}
-//     </ScrollView>
-//   );
-// };
-
-// export default HomeScreen;
-
-
 import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Dimensions, StatusBar, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Users, UserCheck } from 'lucide-react-native';
+
 
 const { width } = Dimensions.get('window');
 
@@ -48,71 +10,83 @@ const HomeScreen = () => {
   const navigation = useNavigation<any>();
 
   return (
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header Banner */}
-      <View style={styles.headerBanner}>
-        <Text style={styles.bannerTitle}>Welcome Back!</Text>
-        <Text style={styles.bannerSubtitle}>Manage your business with ease</Text>
-      </View>
+    <SafeAreaView style={styles.safeContainer}>
+      <StatusBar
+        translucent={true}
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
+        {/* Header Banner */}
+        <View style={styles.headerBanner}>
+          <Text style={styles.bannerTitle}>Welcome Back!</Text>
+          <Text style={styles.bannerSubtitle}>Manage your business with ease</Text>
+        </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      
 
-      {/* Stats Section */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Owners</Text>
+        {/* Stats Section */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>Owners</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>Customers</Text>
+          </View>
         </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Customers</Text>
-        </View>
-      </View>
 
-      {/* Main Action Buttons */}
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
+        {/* Main Action Buttons */}
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
 
-      {/* Create Owner Button */}
-      <TouchableOpacity
-        style={[styles.actionButton, styles.ownerButton]}
-        onPress={() => navigation.navigate('OwnerForm')}
-        activeOpacity={0.8}
-      >
-        <View style={styles.buttonIconContainer}>
-          <UserCheck size={28} color="#fff" strokeWidth={2.5} />
-        </View>
-        <View style={styles.buttonTextContainer}>
-          <Text style={styles.buttonTitle}>Create Owner</Text>
-          <Text style={styles.buttonDescription}>Add a new property owner</Text>
-        </View>
-      </TouchableOpacity>
+        {/* Create Owner Button */}
+        <TouchableOpacity
+          style={[styles.actionButton, styles.ownerButton]}
+          onPress={() => navigation.navigate('OwnerForm')}
+          activeOpacity={0.8}
+        >
+          <View style={styles.buttonIconContainer}>
+            <UserCheck size={28} color="#fff" strokeWidth={2.5} />
+          </View>
+          <View style={styles.buttonTextContainer}>
+            <Text style={styles.buttonTitle}>Create Owner</Text>
+            <Text style={styles.buttonDescription}>Add a new property owner</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* Create Customer Button */}
-      <TouchableOpacity
-        style={[styles.actionButton, styles.customerButton]}
-        onPress={() => navigation.navigate('CustomerForm')}
-        activeOpacity={0.8}
-      >
-        <View style={styles.buttonIconContainer}>
-          <Users size={28} color="#fff" strokeWidth={2.5} />
-        </View>
-        <View style={styles.buttonTextContainer}>
-          <Text style={styles.buttonTitle}>Create Customer</Text>
-          <Text style={styles.buttonDescription}>Register a new customer</Text>
-        </View>
-      </TouchableOpacity>
+        {/* Create Customer Button */}
+        <TouchableOpacity
+          style={[styles.actionButton, styles.customerButton]}
+          onPress={() => navigation.navigate('CustomerForm')}
+          activeOpacity={0.8}
+        >
+          <View style={styles.buttonIconContainer}>
+            <Users size={28} color="#fff" strokeWidth={2.5} />
+          </View>
+          <View style={styles.buttonTextContainer}>
+            <Text style={styles.buttonTitle}>Create Customer</Text>
+            <Text style={styles.buttonDescription}>Register a new customer</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* Info Banner */}
-      <View style={styles.infoBanner}>
-        <Text style={styles.infoBannerText}>
-          📊 Keep track of all your owners and customers in one place
-        </Text>
-      </View>
-    </ScrollView>
+        {/* Info Banner */}
+        <View style={styles.infoBanner}>
+          <Text style={styles.infoBannerText}>
+            📊 Keep track of all your owners and customers in one place
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#faf5ff",
+  },
   container: {
-    paddingBottom: 30,
+    flex: 1,
     backgroundColor: '#f8f9fa',
   },
   headerBanner: {
@@ -122,6 +96,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     marginBottom: 30,
+    paddingTop: 80
   },
   bannerTitle: {
     fontSize: 32,
